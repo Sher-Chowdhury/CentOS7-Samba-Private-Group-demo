@@ -39,9 +39,8 @@ jerrypassword
 EOF
 
 mkdir -p /samba/editors
-#chown nobody:sam /samba/export_rw
-#chmod g+rwx /samba/export_rw
-#chmod g+s /samba/export_rw
+chgrp editors /samba/editors
+chmod g+rwx /samba/editors
 
 semanage fcontext -at samba_share_t "/samba/editors(/.*)?"
 restorecon -Rv /samba/editors
