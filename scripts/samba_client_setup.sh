@@ -27,7 +27,7 @@ usermod -aG editors jerry
 
 
 echo 'username=tom' > /etc/toms-samba-creds
-echo 'password=tompassword' > /etc/toms-samba-creds
+echo 'password=tompassword' >> /etc/toms-samba-creds
 chmod 600 /etc/toms-samba-creds
 
 echo '//samba-storage.local/editors_collab_folder /mnt/editors-team-folder  cifs  credentials=/etc/toms-samba-creds,soft,rw,_netdev  0 0' >> /etc/fstab
