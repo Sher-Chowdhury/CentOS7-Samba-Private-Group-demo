@@ -6,39 +6,45 @@ echo '##########################################################################
 echo '##### About to run samba_server_setup.sh script ##################'
 echo '##########################################################################'
 
-
 yum -y install samba samba-client
-
-mkdir -p /samba/export_rw
 
 setsebool -P samba_export_all_ro on
 setsebool -P samba_export_all_rw on
 setsebool -P samba_share_nfs on
 
-semanage fcontext -at samba_share_t "/samba/export_rw(/.*)?"
-
-restorecon -R /samba/export_rw
-
-groupadd --gid 2000 sambagroup
-chown nobody:sambagroup /samba/export_rw
-chmod g+rwx /samba/export_rw
-
 firewall-cmd --permanent --add-service=samba
 systemctl restart firewalld
 
-# this is to avoid an alias. 
+
 mv /etc/samba/smb.conf /etc/samba/smb.conf-orig
+# this is to avoid an alias. 
 /bin/cp -f /vagrant/files/smb.conf /etc/samba/smb.conf
 
-useradd samba_user1
-usermod -aG sambagroup samba_user1
-usermod -aG sambagroup root
+groupadd --gid 2000 editors
+useradd -u 3334 tom
+useradd -u 3335 jerry 
 
+usermod -aG editors tom
+usermod -aG editors jerry
 
-smbpasswd -a samba_user1 <<EOF
-password123
-password123
+# note: need to sort out content of smb.conf before using the smbpasswd command. 
+smbpasswd -a tom <<EOF
+tompassword
+tompassword
 EOF
+
+smbpasswd -a jerry <<EOF
+jerrypassword
+jerrypassword
+EOF
+
+mkdir -p /samba/editors
+#chown nobody:sam /samba/export_rw
+#chmod g+rwx /samba/export_rw
+#chmod g+s /samba/export_rw
+
+semanage fcontext -at samba_share_t "/samba/editors(/.*)?"
+restorecon -Rv /samba/editors
 
 systemctl enable smb
 systemctl start smb
